@@ -46,7 +46,8 @@ def new_file():
    global filename, df
    ans = tkinter.messagebox.askyesno(title="Are you sure?", message="Are you sure you want to create new dataset file? It will erase previously existing file with all it's data and the current DataFrame!")
    if ans:
-      filename = "./dataset.csv"
+      filename = fd.asksaveasfile(initialfile = 'dataset.csv',
+defaultextension=".csv",filetypes=[("All Files","*.*"),("csv files","*.csv")])
       columns = ['landmark_'+str(i)+'.'+a for i in range(21) for a in ['x', 'y', 'z']]
       columns += ['world_landmark_' + str(i) + '.' + a for i in range(21) for a in ['x', 'y', 'z']]
       columns += ['handedness', 'letter']
