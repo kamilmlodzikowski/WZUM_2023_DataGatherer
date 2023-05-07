@@ -101,7 +101,8 @@ def main():
     # Define signs and create buttons
     button_label = Label(win)
     button_label.grid(row=1, column=0)
-    signs = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y']
+    signs = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n',
+             'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y']
     photos = {letter: PhotoImage(file=r'./sign/'+letter+'.png') for letter in signs}
 
     _ = [
@@ -121,7 +122,8 @@ def main():
             global results
             # Get the latest frame and convert into Image
             cv2image = cap.read()[1]
-            # To improve performance, optionally mark the image as not writeable to pass by reference.
+            # To improve performance, optionally mark the image as not writeable to pass
+            # by reference.
             cv2image.flags.writeable = False
             cv2image = cv2.cvtColor(cv2image, cv2.COLOR_BGR2RGB)
             results = hands.process(cv2image)
@@ -141,7 +143,7 @@ def main():
             img = img.resize((int(img.size[0]*1080/img.size[1]/2.1), int(1080/2.1)))
 
             # Convert image to PhotoImage
-            imgtk = ImageTk.PhotoImage(image = img)
+            imgtk = ImageTk.PhotoImage(image=img)
             video_label.imgtk = imgtk
             video_label.configure(image=imgtk)
             # Repeat after an interval to capture continuously
