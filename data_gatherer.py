@@ -17,6 +17,7 @@ mp_hands = mp.solutions.hands
 filename: Union[None, str] = None
 df: Union[None, pd.DataFrame] = None
 results: Union[None, NamedTuple] = None
+count_labels: Union[None, list] = None
 
 
 def add_data(letter: str) -> None:
@@ -26,7 +27,7 @@ def add_data(letter: str) -> None:
             'DataFrame Error',
             'Error: No DataFrame loaded! Create new file or load an existing one!'
         )
-    else:
+    elif results.multi_hand_landmarks is not None:
         landmarks = []
         for ld in results.multi_hand_landmarks[0].landmark:
             landmarks += [ld.x, ld.y, ld.z]
@@ -37,14 +38,27 @@ def add_data(letter: str) -> None:
         df.loc[len(df)] = landmarks
         print(f'{df=}')
         df.to_csv(filename)
-
+        upadate_text()
 
 def load_file():
     global filename, df
     filename = fd.askopenfilename()
     df = pd.read_csv(filename, index_col=0)
     print(f'{df=}')
+    upadate_text()
 
+def upadate_text():
+    global count_labels, df
+
+    signs = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n',
+             'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y']
+
+    for i, letter in enumerate(signs):
+        if letter in df['letter'].value_counts().index:
+            count = df['letter'].value_counts()[letter]
+        else:
+            count = 0
+        count_labels[i].config(text=str(count), font=("Arial", 16))
 
 def new_file():
     global filename, df
@@ -94,14 +108,17 @@ def main():
     # Set the size of the window
     win.geometry('1920x1080')
 
+    left_label = Label(win)
+    left_label.grid(row=0, column=0)
+
     # Create a Label to capture the Video frames
-    video_label = Label(win)
+    video_label = Label(left_label)
     video_label.grid(row=0, column=0)
 
     cap = cv2.VideoCapture(0)
 
     # Define signs and create buttons
-    button_label = Label(win)
+    button_label = Label(left_label)
     button_label.grid(row=1, column=0)
     signs = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n',
              'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y']
@@ -113,6 +130,16 @@ def main():
            command=lambda letter=letter:
            add_data(letter)).grid(row=int(i/6), column=i % 6) for i, letter in enumerate(signs)
     ]
+
+    global count_labels
+    right_label = Label(win)
+    right_label.grid(row=0, column=1)
+    _ = [Label(right_label, text=letter.upper()+': ', font=("Arial", 16, 'bold')).grid(row=i, column=0)
+         for i, letter in enumerate(signs)]
+    count_labels = [Label(right_label, text='None', font=("Arial", 16)) for i, letter in enumerate(signs)]
+    for i, label in enumerate(count_labels):
+        label.grid(row=i, column=1)
+
     with mp_hands.Hands(
         model_complexity=0,
         min_detection_confidence=0.5,
