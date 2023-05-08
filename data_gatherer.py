@@ -54,11 +54,13 @@ def new_file():
                 'existing file with all its data and the current DataFrame!'
     )
     if ans:
-        filename = fd.asksaveasfile(
+        file = fd.asksaveasfile(
             initialfile='dataset.csv',
             defaultextension='.csv',
-            filetypes=[('All Files', '*.*'), ('csv files', '*.csv')]
+            filetypes=[('All Files', '*.*'), ('csv files', '*.csv')], mode='w'
         )
+        filename = file.name
+        file.close()
         columns = ['landmark_'+str(i)+'.'+a for i in range(21) for a in ['x', 'y', 'z']]
         columns += ['world_landmark_' + str(i) + '.' + a for i in range(21) for a in ['x', 'y', 'z']]
         columns += ['handedness', 'letter']
