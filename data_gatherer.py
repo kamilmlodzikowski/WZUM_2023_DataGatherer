@@ -34,6 +34,12 @@ def add_data(letter: str) -> None:
         for ld in results.multi_hand_landmarks[0].landmark:
             landmarks += [ld.x, ld.y, ld.z]
         landmarks += [results.multi_handedness[0].classification[0].score]
+
+        if (results.multi_handedness[0].classification[0].label == "Right"):
+            landmarks += ["Left"]
+        if (results.multi_handedness[0].classification[0].label == "Left"):
+            landmarks += ["Right"]
+
         landmarks += [letter]
         df.loc[len(df)] = landmarks
         print(f'{df=}')
@@ -77,7 +83,7 @@ def new_file():
         file.close()
         columns = ['landmark_'+str(i)+'.'+a for i in range(21) for a in ['x', 'y', 'z']]
         columns += ['world_landmark_' + str(i) + '.' + a for i in range(21) for a in ['x', 'y', 'z']]
-        columns += ['handedness', 'letter']
+        columns += ['handedness.score', 'handedness.label', 'letter']
         df = pd.DataFrame(columns=columns)
         df.to_csv(filename)
 
